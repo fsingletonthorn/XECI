@@ -5,12 +5,11 @@ XECI_corr <-
            nSize,
            nullRho = 0,
            ciSize = 95,
-           partial = 0,
+           partial = FALSE,
            nPartialR = 0) {
     # XECI_corr calculates effect sizes and CI for Pearson zero-order and
-    # partial correlations, and CI for Spearman rank-order correlation (if
-    # Spearman correlation entered as input value). If nPartialR > 0, 
-    # partial correlations are reported
+    # partial correlations. If Partial = TRUE, nPartial must be specified 
+    # for meaningful results. 
     
     # Dependencies ####
     # Requires XECI_rho_cdf, XECI_ncp_rho, hypergeomF, is.wholeNumber
@@ -28,39 +27,19 @@ XECI_corr <-
     # "Observed t value"= tVal
     # "Degrees of freedom" = df.tVal
     # "Obtained p value" = pVal.tTest
+    # Point estimates
     # "partial correlation"= sampleR
-    # "Fisher\'s_r_to_z_CI" = fisher.RToZ.CI
     # "Unbiased Fisher\'s r to z" = unbiasedR
+    # Confidence intervals
+    # "Fisher\'s r to z CI" = fisher.RToZ.CI
     # "Unbiased Fisher\'s r to z CI" = unbiased.RToZ.CI
     # "Exact (sample) CI" = exactSample.CI
     # "Exact (unbiased) CI" = unbiasedExact.CI
     
-     # The following have been copied from XECI (01.04.2018) IGNORE THIS: 
-    #       esXECI = (2 X 1) vector of point estimates of effect sizes
-    #                    Sample correlation (zero-order or partial)
-    #                    Olkin & Pratt's unbiased estimate
-    #
-    #       ciXECI = (8 X 3) matrix of lower and upper bound CI estimates
-    #                    Large-sample Pearson
-    #                    Large-sample Olkin & Pratt's unbiased estimate
-    #                    Large-sample Spearman
-    #                    Exact for Pearson correlation
-    #                    Exact for unbiased estimate of Pearson
-    #
-    #         tStat = t statistic value
-    #         df = Degrees of freedom
-    #         p = Obtained P value
-    #         nullRho.p = Null-rho P value
-    #
-    #       varXECI = (9 X 2) vector of estimated variances
-    #                    Large sample variance
-    #                    Olkin & Pratt variance
-    #
-    
     # VERSION HISTORY ####
     # 01.04.2018 - FST creates function - Only Fisher's r to z CI are calculated
     # 08.04.2018 - FST updates function with other functionality - does not account for partial correlations yet
-    #
+    # 08.04.2018 - FST updates function with other functionality - accounts for partial correlations,  does not allow spearman correlation
     
     # Package from which functions were adapted for use in this function: ####
     #
@@ -68,7 +47,7 @@ XECI_corr <-
     
     # Input check ####
     # if partial does not equal 1, set npartialR to 0
-    if(partial == 0){ nPartialR <- 0}
+    if(partial == FALSE){ nPartialR <- 0}
     # setting up a error message 
     stopCheck<-0
     # Check if sampleR is a number from -1 to 1
@@ -164,7 +143,7 @@ XECI_corr <-
       "Observed t value" = tVal,
       "Degrees of freedom" = df.tVal,
       "Obtained p value" = pVal.tTest,
-      "partial correlation" = sampleR,
+      "Sample correlation" = sampleR,
       "Fisher\'s r to z CI" = fisher.RToZ.CI,
       "Unbiased R" = unbiasedR,
       "Fisher\'s r to z CI around Unbiased R" = unbiased.RToZ.CI,
@@ -175,16 +154,15 @@ XECI_corr <-
     
   #References####
     # Olkin, I., & Pratt, J. W. (1958). Unbiased Estimation of Certain Correlation Coefficients. The Annals of Mathematical Statistics, 29(1), 201-211.  Retrieved from http://www.jstor.org.ezp.lib.unimelb.edu.au/stable/2237306
-    # Pearson, J. W. (2009). Computation of hypergeometric functions (Masters dissertation, University of Oxford).!
+    # Pearson, J. W. (2009). Computation of hypergeometric functions (Masters dissertation, University of Oxford).
   }
 
 # OUTPUT setting ####
 spsspkg.StartProcedure("XECI output")
-spsspivottable.Display(t(as.data.frame(output[1:3])), title = "Findings for statistical tests", collabels = "Value")
-spsspivottable.Display(t(as.data.frame(output[c(4, 6)])), title = "Correlation coefficents", collabels = "Value")
+spsspivottable.Display(t(as.data.frame(output[1:3])), title = "Findings for statistical tests", collabels = "Value", rowlabels = c("Observed t value", "Degrees of freedom", "Obtained p value"), format=1)
+spsspivottable.Display(t(as.data.frame(output[c(4, 6)])), title = "Correlation coefficents", collabels = "Value",  rowlabels = c("Sample correlation", "Unbiased r"), format=1)
 spsspivottable.Display(
   t(as.data.frame(output[c(5, 7, 8, 9)])),
-  title = "Confidence intervals",
-  collabels = c("Lower limit", "Upper limit")
+  title = "Confidence intervals",collabels = c("Lower limit", "Upper limit"), rowlabels =c("Fisher's r to z CI, sample r", "Fisher's r to z CI, unbiased r", "Exact (sample) CI","Exact (unbiased) CI"), format=1
 )
 spsspkg.EndProcedure()
