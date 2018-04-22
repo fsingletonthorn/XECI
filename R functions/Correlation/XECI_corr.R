@@ -1,5 +1,3 @@
-# library(spssstatistics) # "spssstatistics" not necessary for the current function moment - BUT this has output testing below, be warned, not final version of the function!!
-
 XECI_corr <-
   function(sampleR,
            nSize,
@@ -39,7 +37,7 @@ XECI_corr <-
     # VERSION HISTORY ####
     # 01.04.2018 - FST creates function - Only Fisher's r to z CI are calculated
     # 08.04.2018 - FST updates function with other functionality - does not account for partial correlations yet
-    # 08.04.2018 - FST updates function with other functionality - accounts for partial correlations,  does not allow spearman correlation
+    # 22.04.2018 - FST updates function with other functionality - accounts for partial correlations,  does not account for spearman correlation
     
     # Package from which functions were adapted for use in this function: ####
     #
@@ -156,13 +154,3 @@ XECI_corr <-
     # Olkin, I., & Pratt, J. W. (1958). Unbiased Estimation of Certain Correlation Coefficients. The Annals of Mathematical Statistics, 29(1), 201-211.  Retrieved from http://www.jstor.org.ezp.lib.unimelb.edu.au/stable/2237306
     # Pearson, J. W. (2009). Computation of hypergeometric functions (Masters dissertation, University of Oxford).
   }
-
-# OUTPUT setting ####
-spsspkg.StartProcedure("XECI output")
-spsspivottable.Display(t(as.data.frame(output[1:3])), title = "Findings for statistical tests", collabels = "Value", rowlabels = c("Observed t value", "Degrees of freedom", "Obtained p value"), format=1)
-spsspivottable.Display(t(as.data.frame(output[c(4, 6)])), title = "Correlation coefficents", collabels = "Value",  rowlabels = c("Sample correlation", "Unbiased r"), format=1)
-spsspivottable.Display(
-  t(as.data.frame(output[c(5, 7, 8, 9)])),
-  title = "Confidence intervals",collabels = c("Lower limit", "Upper limit"), rowlabels =c("Fisher's r to z CI, sample r", "Fisher's r to z CI, unbiased r", "Exact (sample) CI","Exact (unbiased) CI"), format=1
-)
-spsspkg.EndProcedure()
