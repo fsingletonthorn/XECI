@@ -137,17 +137,19 @@ XECI_corr <-
     unbiasedExact.CI[2]  <- XECI_ncp_rho(unbiasedR, nSize-nPartialR, nPartialR, probCI[2])
     
     # output
-    output <- list(
-      "Observed t value" = tVal,
-      "Degrees of freedom" = df.tVal,
-      "Obtained p value" = pVal.tTest,
-      "Sample correlation" = sampleR,
-      "Fisher\'s r to z CI" = fisher.RToZ.CI,
-      "Unbiased R" = unbiasedR,
-      "Fisher\'s r to z CI around Unbiased R" = unbiased.RToZ.CI,
-      "Exact (sample) CI" = exactSample.CI,
-      "Exact (unbiased) CI" = unbiasedExact.CI
-    )
+    
+    tTestOutput<-list("Observed t value" = tVal,
+                      "Degrees of freedom" = df.tVal,
+                      "Obtained p value" = pVal.tTest)
+    pointEstimateOutput<-list("Sample correlation" = sampleR,
+                              "Unbiased R" = unbiasedR)
+    CIsOutput<-list("Fisher\'s r to z CI, sample r" = fisher.RToZ.CI,
+                    "Fisher\'s r to z CI, unbiased r" = unbiased.RToZ.CI,
+                    "Exact CI, sample r" = exactSample.CI,
+                    "Exact CI, unbiased r" = unbiasedExact.CI)
+
+    
+    output <- list(tTestOutput,pointEstimateOutput,CIsOutput)
     return(output)
     
   #References####

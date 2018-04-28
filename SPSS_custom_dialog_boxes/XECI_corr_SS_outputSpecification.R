@@ -1,9 +1,16 @@
 # output specification for XECI_corr. ####
+
+
+output<-XECI_corr(.5,50,0)
+title=c("Findings for statistical tests","Correlation coefficents","confidence Intervals")
+
 spsspkg.StartProcedure("XECI output")
-spsspivottable.Display(t(as.data.frame(output[1:3])), title = "Findings for statistical tests", collabels = "Value", rowlabels = c("Observed t value", "Degrees of freedom", "Obtained p value"), format=2)
-spsspivottable.Display(t(as.data.frame(output[c(4, 6)])), title = "Correlation coefficents", collabels = "Value",  rowlabels = c("Sample correlation", "Unbiased r"), format=2)
-spsspivottable.Display(
-  t(as.data.frame(output[c(5, 7, 8, 9)])),
-  title = "$$Confidence_interval_width$$ percent Confidence intervals",collabels = c("Lower limit", "Upper limit"), rowlabels =c("Fisher's r to z CI, sample r", "Fisher's r to z CI, unbiased r", "Exact CI, sample r","Exact CI, unbiased r"), format=2
-)
+spsspivottable.Display(t(as.data.frame(output[[1]])), title = title[1],
+                       collabels = 'Value', rowlabels = names(output[[1]]), format =2)
+
+spsspivottable.Display(t(as.data.frame(output[[2]])), title = title[2],
+                       collabels = 'Value', rowlabels = names(output[[2]]), format=2)      
+
+spsspivottable.Display(t(as.data.frame(output[[3]])),title =title[3],
+                       collabels = c("Lower limit", "Upper limit"), rowlabels = names(output[[3]]), format=2)
 spsspkg.EndProcedure()
