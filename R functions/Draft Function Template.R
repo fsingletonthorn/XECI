@@ -84,4 +84,6 @@ XECI_function <- ## replace function with function name (e.g., XECI_corr for cor
       ### etc.,
       )
     return(output)
+    # References ####
+    # Smith & Smith (2018) Example paper title. Journal of Examples, 18, 271-279. doi:10.3102/10769986018003271
   }
