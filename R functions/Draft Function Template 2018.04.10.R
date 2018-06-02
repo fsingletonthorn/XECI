@@ -28,9 +28,9 @@ XECI_function <- ## replace function with function name (e.g., XECI_corr for cor
     
     # Version history ####
     # Provide updates here in format:
-    # DD.MM.YYYY - Initials
+    # YYYY.MM.DD
     # e.g., 
-    # 01.04.2018 - PD
+    # 2018.03.12 - PD
     
     # Functions adapted for use in this function: ####
     # # Provide source for any issues 
