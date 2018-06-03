@@ -124,45 +124,17 @@ XECI_2GroupDependent <- ## replace function with function name (e.g., XECI_corr 
     #[*** = recommended by Viechtbauer, 2007] 
     # 2 dependent case for delta_D which corresponds to individual change
     # (Viechtbauer, 2007, Table 1)
-    
-    # Variance for g (Viechtbauer, 2007, Eq. 23)  
-    var_g1B = (df * (1 + (nSize * hedgesGChange * hedgesGChange))) / (df2 * nSize) - (hedgesGChange * hedgesGChange) / (jCorrection * jCorrection)                 
-    
-    # Variance for d (Viechtbauer, 2007, Eq. 24)
-    var_d1B = (jCorrection * jCorrection * df * (1 + (nSize * unbiasedGChange * unbiasedGChange))) /  (df2 * nSize) - (unbiasedGChange * unbiasedGChange)
-   
-    # Variance for g (Viechtbauer, 2007, Eq. 25)   
-    var_g1U = (1 / (nSize * jCorrection * jCorrection)) +  (1 - (df2 / (df * jCorrection * jCorrection))) * (hedgesGChange * hedgesGChange)
-    
-    # Variance for d (Viechtbauer, 2007, Eq. 26)  
-    var_d1U = (1 / nSize) + (1 - (df2 / (df * jCorrection * jCorrection))) * (unbiasedGChange * unbiasedGChange)     
-    
+
     # Variance for g (Viechtbauer, 2007, Eq. 28) (*** dL1)  
     var_g1L1 = (1 / nSize) + ((hedgesGChange * hedgesGChange) / (2 * df))
    
     # Variance for d (Viechtbauer, 2007, Eq. 29)   
     var_d1L1 = (1 / nSize) + ((unbiasedGChange * unbiasedGChange) / (2 * df))
     
-    # Variance for g (Viechtbauer, 2007, Eq. 30)
-    var_g1L2 = (1 / nSize) + ((hedgesGChange * hedgesGChange) / (2 * nSize))  
-    
-    # Variance for d (Viechtbauer, 2007, Eq. 31)
-    var_d1L2 = (1 / nSize) + ((unbiasedGChange * unbiasedGChange) / (2 * nSize)) 
-    
+
     # 2 dependent case for delta_D2 which corresponds to group differences
     # (Viechtbauer, 2007, Table 2)
-    # Variance for g (Viechtbauer, 2007, Eq. 34)
-    var_g2B <- (df * (sampleRAdj + (nSize * hedgesGDiff * hedgesGDiff))) / (df2 * nSize) - (hedgesGDiff * hedgesGDiff) / (jCorrection * jCorrection)
 
-    # Variance for d (Viechtbauer, 2007, Eq. 35)        
-    var_d2B <- (jCorrection * jCorrection * df * (sampleRAdj + (nSize * cohenDDiff * cohenDDiff))) / (df2 * nSize) - (cohenDDiff * cohenDDiff) 
-
-    # Variance for g (Viechtbauer, 2007, Eq. 36)
-    var_g2U <- (unbiasedRAdj / (nSize * jCorrection * jCorrection)) + (1 - (df2 / (df * jCorrection * jCorrection))) * (hedgesGDiff * hedgesGDiff)                                      
-    
-    # Variance for d (Viechtbauer, 2007, Eq. 37)
-    var_d2U <- (unbiasedRAdj / nSize) + (1 - (df2 / (df * jCorrection * jCorrection))) * (cohenDDiff * cohenDDiff)                                        
-    
     # Variance for g (Viechtbauer, 2007, Eq. 39)
     var_g2L1 <- (sampleRAdj / nSize) + ((hedgesGDiff * hedgesGDiff) / (2 * df))
     
@@ -178,7 +150,8 @@ XECI_2GroupDependent <- ## replace function with function name (e.g., XECI_corr 
     # Variance estimate of Dunlap's d based on Viechtbauer, 2007, Eq. 41 / 42)
     var_dd <- (sampleRAdj / nSize) + ((dunlapDDiff * dunlapDDiff) / (2 * nSize))
     
-    # Confidence intervals #### THIS NEEDS TO COME EARLIER ~!!!
+
+    ### NEED TO MAKE THIS WORK + ADD earlier stuff
     # Bonett separate variance standardizer
     # specifying covaraince matrix 
         sampleCov <- diag(c(sd1^2, sd2^2))
