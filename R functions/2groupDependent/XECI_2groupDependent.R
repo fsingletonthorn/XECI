@@ -1,16 +1,18 @@
-XECI_function <- ## replace function with function name (e.g., XECI_corr for correlation.)
+XECI_2GroupDependent <- ## replace function with function name (e.g., XECI_corr for correlation.)
   function(mean1,
            mean2,
            sd1,
            sd2,
            sampleR,
-           nsize,
-           ciSize = 95) { ## optional inputs input as NaNs
-    # insert description of function here E.g., "XECI_corr calculates effect sizes
-    # and CIs for Pearson zero-order and... etc."
+           nSize,
+           ciSize = 95,
+           groupDifference = 1) {
+    # XECI_2GroupDependent calculates effect sizes and CIs for two dependent group designs
     
-    # Dependencies ####
-    # list dependencies here
+    # Dependencies
+    #conf.limits.nct()
+    #is.wholeNumber()
+    #hypergeomF()
     
     # Argument specifications ####
     # mean1 = mean group 1
@@ -20,6 +22,7 @@ XECI_function <- ## replace function with function name (e.g., XECI_corr for cor
     # sampleR  = sample pearson correlation 
     # n     = sample size
     # ciSize = confidence interval width (%)
+    # groupDifference = 1 for results pertaining to group differences, 0 for individual change over time 
     
     # Output specifications ####
     # Specify output here - can just be copy pasted from "output" below
@@ -29,13 +32,13 @@ XECI_function <- ## replace function with function name (e.g., XECI_corr for cor
     # 2018.06.02 - FST
     
     # Functions adapted for use in this function: ####
-    # # Provide source for any issues 
+    #  
     #
     
     # Input check #### 
     # # setting up warning messages - note that stopCheck acts as a binary to stop the program if there are any warnings
     # setting up a error message 
-    errorMessage<-0
+    stopCheck<-0
     # Check if sampleR is a number from -1 to 1
     if ((sampleR > 1) | (sampleR < -1) | !is.numeric(sampleR)) {
       warning("Sample r must be a number between -1 and +1, inclusive")
@@ -68,7 +71,6 @@ XECI_function <- ## replace function with function name (e.g., XECI_corr for cor
     }
     
     #### Calculations ####
-    
     # Caclulating the rejection area (per tail)
     rejectionAreas <- c(((1 - (ciSize / 100)) / 2),( 1-(1 - (ciSize / 100)) / 2) )
   
@@ -92,8 +94,8 @@ XECI_function <- ## replace function with function name (e.g., XECI_corr for cor
     unbiasedR <- sampleR * hypergeomF(.5, .5, ((df-1)/2),  1-sampleR^2)
 
     # Used below in calculating variances for group difference cases
-    sampleRAdj <- 2 *(1-sampleR)
-    unbiasedRAdj<- 2*(1-unbiasedR)
+    sampleRAdj <- 2 * (1-sampleR)
+    unbiasedRAdj<- 2 * (1-unbiasedR)
     
     # Gibbons et al's rationale (called individual change/repeated measures
     # in Morris & DeShon & notated as delta_RM; called delta_D in Viechtbauer)
@@ -102,15 +104,15 @@ XECI_function <- ## replace function with function name (e.g., XECI_corr for cor
     var <- sd1 * sd1 + sd2*sd2 - 2*sd1 * sd2 * sampleR
     
     # mean difference CIs ####
-    ciMeanDiff <- meanDiff + (tCrit * (sqrt(var)/sqrtNsize))
+    ciMeanDiff <- meanDiff + (tCrit * (sqrt(var)/sqrtNSize))
     
     # Biased hedges g ####
     hedgesGChange = meanDiff / sqrt(var)
     # Hedges correction applied to g
-    cohenDChange = hedgesGChange * jCorrection
+    unbiasedGChange = hedgesGChange * jCorrection
     
-    # Hedges' g for standardized group difference
-    sdPooledGrp1 = sdGrp1;                                              
+    # Glass' delta for standardized group difference and unbiased glasses delta #
+    sdPooledGrp1 = sd1;                                          
     hedgesGDiff = meanDiff / sdPooledGrp1;                            
     cohenDDiff = hedgesGDiff * jCorrection; 
     
@@ -123,93 +125,99 @@ XECI_function <- ## replace function with function name (e.g., XECI_corr for cor
     # 2 dependent case for delta_D which corresponds to individual change
     # (Viechtbauer, 2007, Table 1)
     
-    var_g1B = (df * (1 + (nSize * hedgesGChange * hedgesGChange))) / ...
-    (df2 * nSize) - ...
-    (hedgesGChange * hedgesGChange) / ...
-    (jCorrection * jCorrection);                                        # Variance for g (Viechtbauer, 2007, Eq. 23)
+    # Variance for g (Viechtbauer, 2007, Eq. 23)  
+    var_g1B = (df * (1 + (nSize * hedgesGChange * hedgesGChange))) / (df2 * nSize) - (hedgesGChange * hedgesGChange) / (jCorrection * jCorrection)                 
     
-    var_d1B = (jCorrection * jCorrection * df * ...
-               (1 + (nSize * dCohen_change * dCohen_change))) / ...
-    (df2 * nSize) - ...
-    (dCohen_change * dCohen_change);                                    # Variance for d (Viechtbauer, 2007, Eq. 24)
+    # Variance for d (Viechtbauer, 2007, Eq. 24)
+    var_d1B = (jCorrection * jCorrection * df * (1 + (nSize * unbiasedGChange * unbiasedGChange))) /  (df2 * nSize) - (unbiasedGChange * unbiasedGChange)
+   
+    # Variance for g (Viechtbauer, 2007, Eq. 25)   
+    var_g1U = (1 / (nSize * jCorrection * jCorrection)) +  (1 - (df2 / (df * jCorrection * jCorrection))) * (hedgesGChange * hedgesGChange)
     
-    var_g1U = (1 / (nSize * jCorrection * jCorrection)) + ...
-    (1 - (df2/(df * jCorrection * jCorrection))) * ...
-    (hedgesGChange * hedgesGChange);                                  # Variance for g (Viechtbauer, 2007, Eq. 25)
+    # Variance for d (Viechtbauer, 2007, Eq. 26)  
+    var_d1U = (1 / nSize) + (1 - (df2 / (df * jCorrection * jCorrection))) * (unbiasedGChange * unbiasedGChange)     
     
-    var_d1U = (1 / nSize) + ...
-    (1-(df2/(df * jCorrection * jCorrection))) * ...
-    (dCohen_change * dCohen_change);                                    # Variance for d (Viechtbauer, 2007, Eq. 26)
+    # Variance for g (Viechtbauer, 2007, Eq. 28) (*** dL1)  
+    var_g1L1 = (1 / nSize) + ((hedgesGChange * hedgesGChange) / (2 * df))
+   
+    # Variance for d (Viechtbauer, 2007, Eq. 29)   
+    var_d1L1 = (1 / nSize) + ((unbiasedGChange * unbiasedGChange) / (2 * df))
     
-    var_g1L1 = (1 / nSize) + ...
-    ((hedgesGChange * hedgesGChange) / (2*df));                       # Variance for g (Viechtbauer, 2007, Eq. 28) (*** dL1)
+    # Variance for g (Viechtbauer, 2007, Eq. 30)
+    var_g1L2 = (1 / nSize) + ((hedgesGChange * hedgesGChange) / (2 * nSize))  
     
-    var_d1L1 = (1 / nSize) + ...
-    ((dCohen_change * dCohen_change) / (2*df));                         # Variance for d (Viechtbauer, 2007, Eq. 29)
-    
-    var_g1L2 = (1 / nSize) + ...
-    ((hedgesGChange * hedgesGChange) / (2*nSize));                    # Variance for g (Viechtbauer, 2007, Eq. 30)
-    
-    var_d1L2 = (1 / nSize) + ...
-    ((dCohen_change * dCohen_change) / (2*nSize));                      # Variance for d (Viechtbauer, 2007, Eq. 31)
-    
+    # Variance for d (Viechtbauer, 2007, Eq. 31)
+    var_d1L2 = (1 / nSize) + ((unbiasedGChange * unbiasedGChange) / (2 * nSize)) 
     
     # 2 dependent case for delta_D2 which corresponds to group differences
     # (Viechtbauer, 2007, Table 2)
-    
-    var_g2B = (df * (sampleR_adj + (nSize * hedgesGDiff * hedgesGDiff))) / 
-          (df2 * nSize) - (hedgesGDiff * hedgesGDiff) / (jCorrection * jCorrection)                                        # Variance for g (Viechtbauer, 2007, Eq. 34)
-    
-    var_d2B = (jCorrection * jCorrection * df * ...
-               (sampleR_adj + (nSize * cohenDDiff * cohenDDiff))) / ...
-    (df2 * nSize) - ...
-    (cohenDDiff * cohenDDiff);                                        # Variance for d (Viechtbauer, 2007, Eq. 35)
-    
-    var_g2U = (unbiasedR_adj / (nSize * jCorrection * jCorrection)) + ...
-    (1 - (df2 / (df * jCorrection * jCorrection))) * ...
-    (hedgesGDiff * hedgesGDiff);                                      # Variance for g (Viechtbauer, 2007, Eq. 36)
-    
-    var_d2U = (unbiasedR_adj / nSize) + ...
-    (1 - (df2 / (df * jCorrection * jCorrection))) * ...
-    (cohenDDiff * cohenDDiff);                                        # Variance for d (Viechtbauer, 2007, Eq. 37)
-    
-    var_g2L1 = (sampleR_adj / nSize) + ...
-    ((hedgesGDiff * hedgesGDiff) / (2 * df));                         # Variance for g (Viechtbauer, 2007, Eq. 39)
-    
-    var_d2L1 = (sampleR_adj / nSize) + ...
-    ((cohenDDiff * cohenDDiff) / (2 * df));                           # Variance for d (Viechtbauer, 2007, Eq. 40) *** gL1 < 1
-    
-    var_g2L2 = (sampleR_adj / nSize) + ...
-    ((hedgesGDiff * hedgesGDiff) / (2 * nSize));                      # Variance for g (Viechtbauer, 2007, Eq. 41) *** dL2 > 1
-    
-    var_d2L2 = (sampleR_adj / nSize) + ...
-    ((cohenDDiff * cohenDDiff) / (2 * nSize));                        # Variance for d (Viechtbauer, 2007, Eq. 42)
-    
-    var_dd = (sampleR_adj / nSize) + ...
-    ((dDunlap_diff * dDunlap_diff) / (2 * nSize));                      # Variance estimate of Dunlap's d based on Viechtbauer, 2007, Eq. 41 / 42)
+    # Variance for g (Viechtbauer, 2007, Eq. 34)
+    var_g2B <- (df * (sampleRAdj + (nSize * hedgesGDiff * hedgesGDiff))) / (df2 * nSize) - (hedgesGDiff * hedgesGDiff) / (jCorrection * jCorrection)
 
+    # Variance for d (Viechtbauer, 2007, Eq. 35)        
+    var_d2B <- (jCorrection * jCorrection * df * (sampleRAdj + (nSize * cohenDDiff * cohenDDiff))) / (df2 * nSize) - (cohenDDiff * cohenDDiff) 
 
+    # Variance for g (Viechtbauer, 2007, Eq. 36)
+    var_g2U <- (unbiasedRAdj / (nSize * jCorrection * jCorrection)) + (1 - (df2 / (df * jCorrection * jCorrection))) * (hedgesGDiff * hedgesGDiff)                                      
+    
+    # Variance for d (Viechtbauer, 2007, Eq. 37)
+    var_d2U <- (unbiasedRAdj / nSize) + (1 - (df2 / (df * jCorrection * jCorrection))) * (cohenDDiff * cohenDDiff)                                        
+    
+    # Variance for g (Viechtbauer, 2007, Eq. 39)
+    var_g2L1 <- (sampleRAdj / nSize) + ((hedgesGDiff * hedgesGDiff) / (2 * df))
+    
+    # Variance for d (Viechtbauer, 2007, Eq. 40) *** gL1 < 1
+    var_d2L1 <- (sampleRAdj / nSize) + ((cohenDDiff * cohenDDiff) / (2 * df))                          
+    
+    # Variance for g (Viechtbauer, 2007, Eq. 41) *** dL2 > 1
+    var_g2L2 <- (sampleRAdj / nSize) + ((hedgesGDiff * hedgesGDiff) / (2 * nSize))                     
+    
+    # Variance for d (Viechtbauer, 2007, Eq. 42)
+    var_d2L2 <- (sampleRAdj / nSize) + ((cohenDDiff * cohenDDiff) / (2 * nSize))                        
+    
+    # Variance estimate of Dunlap's d based on Viechtbauer, 2007, Eq. 41 / 42)
+    var_dd <- (sampleRAdj / nSize) + ((dunlapDDiff * dunlapDDiff) / (2 * nSize))
+    
+    # Confidence intervals #### THIS NEEDS TO COME EARLIER ~!!!
     # Bonett separate variance standardizer
     # specifying covaraince matrix 
         sampleCov <- diag(c(sd1^2, sd2^2))
         sampleCov[2,1] <- sd1 * sampleR * sd2
         sampleCov[1,2] <- sd1 * sampleR * sd2
+    # need to fix the below to get Bonnet's delta and dunlap's d
+        tmp <- XECI_linearContrast(c(meanGrp1, meanGrp2), sampleCov, nSize, c(1, -1), ciSize, 2, 0, nDecs)
 
-        tmp <- xeci_lincon(c(meanGrp1, meanGrp2), sampleCov, nSize, c(1, -1), ciSize, 2, 0, nDecs)
+        dBonett   = tmp[2]
+        ciBonett  = tmp[2,]
+        varBonett = tmp[3]
 
-        dBonett   = tmp1(2);
-        ciBonett  = tmp2(2,:);
-        varBonett = tmp4(3);
-    else
-        dBonett   = NaN;
-        ciBonett  = [NaN NaN];
-        varBonett = NaN;
-    end
+        # CI for Hedges' g for standardized change      (*** dL1)     
+        hedgesGChange.ci = hedgesGChange + (zCrit * sqrt(var_g1L1))
+        # CI for Unbiased g for standardized change
+        unbiasedGChange.ci  = unbiasedGChange  + (zCrit * sqrt(var_d1L1))
+        
+        if (abs(hedgesGChange) < 1) { # IS this right? should the choice of estimator rely on a non-standard 
+          # Glass' delta for standardized difference  (*** gL1)
+          hedgesGDiff.ci <- hedgesGDiff + (zCrit * sqrt(var_g2L1))
+          # CI for Unbiased glass' delta for standardized difference
+          cohenDDiff.ci  <- cohenDDiff  + (zCrit * sqrt(var_d2L1))
+        } else {
+          # CI for Glass' delta for standardized difference  (*** dL2)
+          hedgesGDiff.ci <- hedgesGDiff + (zCrit * sqrt(var_g2L2))
+          # CI for Unbiased Glass' delta for standardized difference
+          cohenDDiff.ci  <- cohenDDiff  + (zCrit * sqrt(var_d2L2))
+        }
 
+        # CI for Dunlap et al's d standardised estimate of group differences
+        dunlapDDiff.ci  <- dunlapDDiff + (zCrit * sqrt(var_dd));             
+        
+        # CI for noncentrality parameter
+        ciNCPs <- conf.limits.nct(tVal, df, ciSize);                             
+        # CI for standardized noncentrality parameter for standardized change
+        ciExact_change <- ciNCPs / sqrtNSize;                                   
+        # CI for standardized noncentrality parameter for standardized difference
+        ciExact_diff  <- ciExact_change * sqrt(unbiasedRAdj);                
 
-
-    
-    
     
     # output ####
     ## Specify output and prepare for output as a list 
@@ -219,13 +227,21 @@ XECI_function <- ## replace function with function name (e.g., XECI_corr for cor
       "Degrees of freedom" = df,
       "Obtained p value" = pVal)
     
+    if( groupDifference == 1) {
+      # iNSERT cis & POINT ESTIMATES FOR GROUP DIFFERENCES HERE! 
+    } else {
+      # iNSERT cis & POINT ESTIMATES FOR CHANGE OVER TIME HERE! 
+    }
+        
+        
     output <- list(
       "t-test results" = tTest,
+      "Point estiamtes" = list, 
+      "Confidence intervals" = list
     )
       
       # References #### 
       # Gibbons, R. D., Hedeker, D. R., & Davis, J. M. (1993). Estimation of Effect Size From a Series of Experiments Involving Paired Comparisons. Journal of Educational Statistics, 18, 271-279. doi:10.3102/10769986018003271
       # Viechtbauer, W. (2007). Approximate Confidence Intervals for Standardized Effect Sizes in the Two-Independent and Two-Dependent Samples Design. Journal of Educational and Behavioral Statistics, 32(1), 39-60. doi:10.3102/1076998606298034
-    )
     return(output)
   }
