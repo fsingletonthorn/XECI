@@ -5,8 +5,7 @@ xeci_lincon <-
            contrastCoef,
            ciSize,
            iType,
-           nDecs,
-           nOrder,
+           nOrder = 0,
            sampleCorr,
            userMSE,
            userDF,
@@ -49,16 +48,16 @@ xeci_lincon <-
     #                      2 = within-subjects contrast; 
     #                      3 = mixed design B/S contrast
     #                      4 = mixed design W/S contrast (includes mixed interaction)
-    # nDecs = 
-    # nOrder = 
-    # sampleCorr = 
-    # userMSE = 
-    # userDF = 
-    # rescale = 
+    # nOrder  =  mean difference scaling value for contrast coefficients
+    #                         0 = mean difference [default]
+    #                         1 = order-1 for 2-way interaction, 
+    #                         2 = order-2 for 3-way interaction, etc
+    # sampleR = vector or matrix of residual within-subjects correlations 
+    # userMSE = user-specified mean square error value
+    # userDF = user-specified degrees of freedom for mean square error
+    # rescale = scalar indicator for normalised rescaling (1 = YES [default], 0 = NO)
     
     # Output specifications ####
-    # Specify output here - can just be copy pasted from "output" below
-    # e.g.:
     # t test results
     # "Observed t value"= tVal
     # "Degrees of freedom" = df.tVal
@@ -67,13 +66,13 @@ xeci_lincon <-
     # Version history ####
     # Provide updates here in format:
     # YYYY.MM.DD
-    # e.g., 
-    # 2018.03.12 - PD
+    # 2011.10.20 - Matlab version created by PD
+    # 2018.06.03 - FST adapts function from 2011.10.20 matlab version to R
     
     # Functions adapted for use in this function: ####
-    # # Provide source for any issues 
+    # MBESS's conf.limits.nct 
     #
-    
+  
     # Input check #### 
     # # setting up warning messages - note that stopCheck acts as a binary to stop the program if there are any warnings
     # setting up a error message 

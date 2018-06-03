@@ -6,23 +6,27 @@ XECI_2GroupDependent <- ## replace function with function name (e.g., XECI_corr 
            sampleR,
            nSize,
            ciSize = 95,
-           groupDifference = 1) {
-    # XECI_2GroupDependent calculates effect sizes and CIs for two dependent group designs
-    
+           individualChange = 1) {
+    #' Effect sizes and CIs for 2 group dependent designs
+    # Argument specifications ####
+    #' @title This function calculates effect sizes and confidence intervals for 2 group dependent designs
+    #' @param mean1 mean group 1
+    #' @param mean2 mean group 2
+    #' @param sd1 standard deviation group 1
+    #' @param sd2 standard deviation group 2
+    #' @param sampleR sample pearson correlation 
+    #' @param n sample size
+    #' @param ciSize confidence interval width (%)
+    #' @param groupDifference 1 for results pertaining to group differences, 0 for individual change over time
+    #' @keywords mean differences dependent samples
+    #' @return OUTPUT SPECIFICATIONS HERE
+    #' @examples Provide examples here
+
     # Dependencies
     #conf.limits.nct()
     #is.wholeNumber()
     #hypergeomF()
     
-    # Argument specifications ####
-    # mean1 = mean group 1
-    # mean2 = mean group 2
-    # sd1   = standard deviation group 1
-    # sd2,  = standard deviation group 2
-    # sampleR  = sample pearson correlation 
-    # n     = sample size
-    # ciSize = confidence interval width (%)
-    # groupDifference = 1 for results pertaining to group differences, 0 for individual change over time 
     
     # Output specifications ####
     # Specify output here - can just be copy pasted from "output" below
@@ -182,14 +186,14 @@ XECI_2GroupDependent <- ## replace function with function name (e.g., XECI_corr 
         }
 
         # CI for Dunlap et al's d standardised estimate of group differences
-        dunlapDDiff.ci  <- dunlapDDiff + (zCrit * sqrt(var_dd));             
+        dunlapDDiff.ci  <- dunlapDDiff + (zCrit * sqrt(var_dd)) 
         
         # CI for noncentrality parameter
-        ciNCPs <- conf.limits.nct(tVal, df, ciSize);                             
+        ciNCPs <- conf.limits.nct(tVal, df, ciSize)                      
         # CI for standardized noncentrality parameter for standardized change
-        ciExact_change <- ciNCPs / sqrtNSize;                                   
+        ciExact_change <- ciNCPs / sqrtNSize              
         # CI for standardized noncentrality parameter for standardized difference
-        ciExact_diff  <- ciExact_change * sqrt(unbiasedRAdj);                
+        ciExact_diff  <- ciExact_change * sqrt(unbiasedRAdj)          
 
     
     # output ####
@@ -200,12 +204,11 @@ XECI_2GroupDependent <- ## replace function with function name (e.g., XECI_corr 
       "Degrees of freedom" = df,
       "Obtained p value" = pVal)
     
-    if( groupDifference == 1) {
+    if(tpye == 1) {
       # iNSERT cis & POINT ESTIMATES FOR GROUP DIFFERENCES HERE! 
     } else {
       # iNSERT cis & POINT ESTIMATES FOR CHANGE OVER TIME HERE! 
     }
-        
         
     output <- list(
       "t-test results" = tTest,
