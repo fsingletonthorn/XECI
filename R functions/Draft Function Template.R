@@ -1,30 +1,20 @@
 XECI_function <- ## replace function with function name (e.g., XECI_corr for correlation.)
-  function(requiredInput,
-           requiredInput,
+  function(requiredInput1,
+           requiredInput2,
            nullValue = 0,
            ciSize = 95,
            optionalInput = NaN) { ## optional inputs input as NaNs
-    # insert description of function here E.g., "XECI_corr calculates effect sizes
-    # and CIs for Pearson zero-order and... etc."
-    
-    # Dependencies ####
-    # list dependencies here
-    
+    #' Name of function here
     # Argument specifications ####
-    # Specify all input arguments here
-    # e.g.,:
-    # sampleR    = observed correlation value
-    # nSize      = sample size
-    # ciSize     = confidence interval size
-    # etc. 
+    #' @title This function does x to y -- Describe what the function does
+    #' @param requiredInput1 describe input and requirements of input 1
+    #' @param requiredInput2 describe input and requirements of input 2
+    #' @param  nullValue null hypothesis value, default = 0
+    #' @param ciSize confidence interval width (%) default = 95
+    #' @keywords provide key words here
+    #' @return OUTPUT SPECIFICATIONS HERE
+    #' @examples Provide examples here
     
-    # Output specifications ####
-    # Specify output here - can just be copy pasted from "output" below
-    # e.g.:
-    # t test results
-    # "Observed t value"= tVal
-    # "Degrees of freedom" = df.tVal
-    # etc. 
     
     # Version history ####
     # Provide updates here in format:
